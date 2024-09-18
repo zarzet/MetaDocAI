@@ -42,23 +42,36 @@
 <body>
     <div class="container">
         <h1 class="mb-4 text-center">Pemeriksa Dokumen</h1>
-        <p class="text-center mb-4">Unggah dokumen .docx atau .pdf untuk memeriksa formatnya sesuai dengan kriteria yang ditentukan.</p>
+        <p class="text-center mb-4">Unggah dokumen .docx untuk memeriksa formatnya sesuai dengan kriteria yang ditentukan.</p>
         <div class="card shadow-sm">
             <div class="card-body">
                 <form action="/" method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
                     <div class="mb-3">
-                        <label for="files" class="form-label">Unggah Dokumen (.docx atau .pdf):</label>
-                        <input class="form-control" type="file" name="files" id="files" accept=".docx, .pdf" multiple required>
+                        {{ form.files.label(class="form-label") }}
+                        {{ form.files(class="form-control", accept=".docx", multiple=True, required=True) }}
                     </div>
                     <div class="mb-3">
                         <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: none;">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Periksa Dokumen</button>
+                    {{ form.submit(class="btn btn-primary w-100") }}
                 </form>
             </div>
         </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
         {% if reports %}
             {% for report in reports %}
                 <div class="result {% if report.success %}alert alert-success{% else %}alert alert-danger{% endif %}">
@@ -95,3 +108,7 @@
 
         form.addEventListener('submit', () => {
             spinner.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
