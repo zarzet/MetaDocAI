@@ -1,23 +1,19 @@
 import os
 from flask import Flask, render_template, request
-from docx import Document  # Pastikan ini adalah python-docx
+from docx import Document  
 from docx.shared import Pt
 import io
-import fitz  # PyMuPDF
+import fitz  
 
 app = Flask(__name__)
 
-# Atur batasan ukuran file (misalnya 10MB)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 Megabytes
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  
 
-# Fungsi untuk memeriksa dokumen .docx
 def check_docx(doc: Document) -> dict:
     report = []
     success = True
 
-    # Memeriksa font, ukuran, dan spasi
     for para in doc.paragraphs:
-        # Memeriksa font dan ukuran
         for run in para.runs:
             if run.font.name != 'Times New Roman':
                 report.append(f'Font tidak sesuai di paragraf: "{para.text[:30]}..."')
@@ -28,24 +24,21 @@ def check_docx(doc: Document) -> dict:
                 success = False
                 break
 
-        # Memeriksa spasi
         if para.paragraph_format.line_spacing is not None:
             spacing = para.paragraph_format.line_spacing
             if spacing != 1.5:
                 report.append(f'Spasi tidak sesuai di paragraf: "{para.text[:30]}..."')
                 success = False
 
-    # Memeriksa margin dalam cm
     sections = doc.sections
     if sections:
         section = sections[0]
-        # Konversi inci ke cm (1 inci = 2.54 cm)
+
         left_margin_cm = section.left_margin.inches * 2.54
         right_margin_cm = section.right_margin.inches * 2.54
         top_margin_cm = section.top_margin.inches * 2.54
         bottom_margin_cm = section.bottom_margin.inches * 2.54
 
-        # Margin yang diharapkan
         expected_margins_cm = {
             'left': 4.0,    # 4 cm
             'right': 3.0,   # 3 cm
@@ -73,7 +66,6 @@ def check_docx(doc: Document) -> dict:
 
     return {"success": success, "messages": report}
 
-# Fungsi untuk memeriksa dokumen PDF
 def check_pdf(file_stream: io.BytesIO) -> dict:
     report = []
     success = True
@@ -83,12 +75,11 @@ def check_pdf(file_stream: io.BytesIO) -> dict:
         report.append('Gagal membaca dokumen PDF.')
         return {"success": False, "messages": report}
 
-    # Memeriksa font dan ukuran font
     for page_num in range(doc.page_count):
         page = doc.load_page(page_num)
         blocks = page.get_text("dict")["blocks"]
         for block in blocks:
-            if block['type'] != 0:  # Hanya teks
+            if block['type'] != 0:  
                 continue
             for line in block.get('lines', []):
                 for span in line.get('spans', []):
@@ -99,11 +90,10 @@ def check_pdf(file_stream: io.BytesIO) -> dict:
                     if 'times new roman' not in font:
                         report.append(f'Font tidak sesuai di halaman {page_num +1}: "{text[:30]}..."')
                         success = False
-                    if abs(size - 12) > 0.5:  # Toleransi ukuran font
+                    if abs(size - 12) > 0.5:  
                         report.append(f'Ukuran font tidak sesuai di halaman {page_num +1}: "{text[:30]}..."')
                         success = False
 
-    # Memeriksa margin pada PDF tidak dilakukan secara mendalam
     report.append('Pemeriksaan margin pada PDF tidak dilakukan secara mendalam.')
 
     return {"success": success and not report, "messages": report}
@@ -111,35 +101,47 @@ def check_pdf(file_stream: io.BytesIO) -> dict:
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        uploaded_file = request.files.get('file')
-        if not uploaded_file:
-            return render_template('index.html', report={"success": False, "messages": ["Tidak ada file yang diunggah."]})
+        uploaded_files = request.files.getlist('files')
+        if not uploaded_files or uploaded_files == [None]:
+            return render_template('index.html', reports=[{"success": False, "filename": "Tidak ada file yang diunggah.", "messages": ["Tidak ada file yang diunggah."]}])
 
-        file_name = uploaded_file.filename.lower()
-        if not (file_name.endswith('.docx') or file_name.endswith('.pdf')):
-            return render_template('index.html', report={"success": False, "messages": ["Silakan unggah file .docx atau .pdf saja."]})
+        reports = []
+        for uploaded_file in uploaded_files:
+            if uploaded_file.filename == '':
+                continue  # Lewati file kosong
 
-        file_bytes = uploaded_file.read()
-        file_stream = io.BytesIO(file_bytes)
+            file_name = uploaded_file.filename.lower()
+            if not (file_name.endswith('.docx') or file_name.endswith('.pdf')):
+                reports.append({
+                    "success": False,
+                    "filename": uploaded_file.filename,
+                    "messages": ["Silakan unggah file .docx atau .pdf saja."]
+                })
+                continue
 
-        if file_name.endswith('.docx'):
-            try:
-                doc = Document(file_stream)
-                report = check_docx(doc)
-            except Exception as e:
-                return render_template('index.html', report={"success": False, "messages": ["Gagal membaca dokumen .docx. Pastikan file dalam format yang benar."]})
-        elif file_name.endswith('.pdf'):
-            report = check_pdf(file_stream)
+            file_bytes = uploaded_file.read()
+            file_stream = io.BytesIO(file_bytes)
 
-        return render_template('index.html', report=report)
+            if file_name.endswith('.docx'):
+                try:
+                    doc = Document(file_stream)
+                    report = check_docx(doc)
+                except Exception as e:
+                    report = {"success": False, "messages": ["Gagal membaca dokumen .docx. Pastikan file dalam format yang benar."]}
+            elif file_name.endswith('.pdf'):
+                report = check_pdf(file_stream)
+
+            report["filename"] = uploaded_file.filename
+            reports.append(report)
+
+        return render_template('index.html', reports=reports)
 
     return render_template('index.html')
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
-    return render_template('index.html', report={"success": False, "messages": ["File terlalu besar. Maksimal 10MB."]}), 413
+    return render_template('index.html', reports=[{"success": False, "filename": "File terlalu besar.", "messages": ["File terlalu besar. Maksimal 50MB."]}]), 413
 
 if __name__ == '__main__':
-    # Cetak isi folder templates untuk debugging
     print("Isi folder 'templates':", os.listdir('templates'))
     app.run(host='0.0.0.0', port=81)
