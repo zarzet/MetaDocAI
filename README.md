@@ -103,7 +103,7 @@ Jika Anda mengalami masalah atau memiliki pertanyaan terkait proyek ini, jangan 
 
 ##  Changelog
 
-### v1.3 - 2024-04-27
+### v1.3 - 2024-09-25
 
 - **Integrasi Fitur Machine Learning:** Penambahan kemampuan klasifikasi dokumen menggunakan model ML untuk menentukan apakah dokumen sesuai atau tidak sesuai dengan kriteria yang ditentukan.
 - **Penambahan Confidence Score:** Menampilkan skor kepercayaan dari prediksi ML untuk memberikan informasi lebih detail kepada pengguna.
