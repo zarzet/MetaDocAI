@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Pemeriksa Dokumen</title>
+    <title>MetaDocAI - Pemeriksa Dokumen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mb-4 text-center">Pemeriksa Dokumen</h1>
+        <h1 class="mb-4 text-center">MetaDocAI - Pemeriksa Dokumen</h1>
         <p class="text-center mb-4">Unggah dokumen .docx atau .pdf untuk memeriksa formatnya sesuai dengan kriteria yang ditentukan.</p>
         <div class="card shadow-sm">
             <div class="card-body">
@@ -78,6 +78,9 @@
                                         <li>{{ item }}</li>
                                     {% endfor %}
                                 </ul>
+                                {% if report.confidence %}
+                                    <p><strong>Confidence Score:</strong> {{ report.confidence }}</p>
+                                {% endif %}
                             </div>
                         </div>
                     {% endif %}
@@ -86,7 +89,7 @@
         {% endif %}
     </div>
     <footer>
-        <p>Buatan Farraz Firdaus NA</p>
+        <p>MetaDocAI © 2023 Farraz Firdaus NA. Semua hak dilindungi undang-undang.</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
