@@ -5,3 +5,4 @@ pdfminer.six==20221115
 scikit-learn==1.2.2
 joblib==1.3.1
 pandas==2.0.3
+gunicorn==20.1.0
