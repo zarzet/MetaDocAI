@@ -2,102 +2,1582 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>MetaDocAI - Pemeriksa Dokumen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaDocAI - Document Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { 
-            padding-top: 50px; 
-            background-color: #f0f2f5; 
+        :root {
+            /* Light Mode */
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 221.2 83.2% 53.3%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 221.2 83.2% 53.3%;
+            --success: 142.1 76.2% 36.3%;
+            --success-foreground: 355.7 100% 97.3%;
         }
-        .container { 
-            max-width: 900px; 
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 217.2 91.2% 59.8%;
+            --primary-foreground: 222.2 84% 4.9%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 224.3 76.3% 94.1%;
+            --success: 142.1 70.6% 45.3%;
+            --success-foreground: 144.9 80.4% 10%;
         }
-        .result { 
-            margin-top: 20px; 
-            padding: 20px; 
-            border-radius: 5px; 
+
+        * {
+            box-sizing: border-box;
         }
-        footer { 
-            margin-top: 40px; 
-            text-align: center; 
-            color: #6c757d; 
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
         }
-        .card { 
-            border: none; 
+
+        .dark {
+            color-scheme: dark;
         }
-        .card-header { 
-            background-color: #fff; 
-            border-bottom: none; 
+
+
+
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
         }
-        .btn-primary { 
-            background-color: #007bff; 
-            border: none; 
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-        .btn-primary:hover { 
-            background-color: #0056b3; 
+
+        .title {
+            font-size: 2.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
+
+        .subtitle {
+            color: hsl(var(--muted-foreground));
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        .card {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed hsl(var(--border));
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            background-color: hsl(var(--muted) / 0.3);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: hsl(var(--primary));
+            background-color: hsl(var(--muted) / 0.5);
+        }
+
+        .upload-area.drag-over {
+            border-color: hsl(var(--primary));
+            background-color: hsl(var(--primary) / 0.1);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .file-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: colors 0.2s;
+            border: 0;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .btn-primary:hover {
+            background-color: hsl(var(--primary) / 0.9);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .spinner {
+            border: 2px solid hsl(var(--muted));
+            border-top: 2px solid hsl(var(--primary));
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            margin-top: 1.5rem;
+        }
+
+        .alert {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, hsl(var(--success) / 0.08) 0%, hsl(var(--success) / 0.12) 100%);
+            border-color: hsl(var(--success) / 0.3);
+            color: hsl(var(--card-foreground));
+        }
+
+        .alert-destructive {
+            background: linear-gradient(135deg, hsl(var(--destructive) / 0.08) 0%, hsl(var(--destructive) / 0.12) 100%);
+            border-color: hsl(var(--destructive) / 0.3);
+            color: hsl(var(--card-foreground));
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .alert-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-success .alert-icon {
+            color: hsl(var(--success));
+        }
+
+        .alert-destructive .alert-icon {
+            color: hsl(var(--destructive));
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: hsl(var(--muted) / 0.3);
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-preview-icon {
+            color: hsl(var(--primary));
+            font-size: 1.25rem;
+        }
+
+        .file-preview-info h6 {
+            margin: 0 0 0.25rem 0;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .file-preview-info small {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.75rem;
+        }
+
+        .batch-controls {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: hsl(var(--muted) / 0.2);
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+        }
+
+        .batch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .batch-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background-color: hsl(var(--background));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .file-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: hsl(var(--muted));
+            color: hsl(var(--muted-foreground));
+        }
+
+        .status-processing {
+            background-color: hsl(var(--primary) / 0.1);
+            color: hsl(var(--primary));
+        }
+
+        .status-success {
+            background-color: hsl(var(--success) / 0.1);
+            color: hsl(var(--success));
+        }
+
+        .status-error {
+            background-color: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            color: hsl(var(--muted-foreground));
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: colors 0.2s;
+        }
+
+        .remove-file:hover {
+            color: hsl(var(--destructive));
+            background-color: hsl(var(--destructive) / 0.1);
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border: 1px solid hsl(var(--border));
+        }
+
+        .btn-secondary:hover {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+
+        .btn-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .settings-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 50;
+            background-color: hsl(var(--background));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: hsl(var(--muted-foreground));
+            transition: all 0.2s;
+        }
+
+        .settings-toggle:hover {
+            background-color: hsl(var(--accent));
+            color: hsl(var(--accent-foreground));
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: hsl(var(--background));
+            border-right: 1px solid hsl(var(--border));
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .settings-panel.open {
+            left: 0;
+        }
+
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .settings-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            color: hsl(var(--muted-foreground));
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+        }
+
+        .settings-close:hover {
+            background-color: hsl(var(--muted));
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: hsl(var(--primary));
+            box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: hsl(var(--muted-foreground));
+            font-size: 0.75rem;
+            pointer-events: none;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .margin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid hsl(var(--border));
+        }
+
+        .btn-success {
+            background-color: hsl(var(--success));
+            color: hsl(var(--success-foreground));
+        }
+
+        .btn-success:hover {
+            background-color: hsl(var(--success) / 0.9);
+        }
+
+        .settings-note {
+            background-color: hsl(var(--muted) / 0.3);
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            color: hsl(var(--muted-foreground));
+            margin-top: 0.5rem;
+        }
+
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: hsl(var(--muted) / 0.2);
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+        }
+
+        .toggle-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: hsl(var(--foreground));
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: hsl(var(--muted));
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: hsl(var(--primary));
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .feature-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .feature-description {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            margin-top: 0.25rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+            background-color: hsl(var(--background));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: hsl(var(--muted-foreground));
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: hsl(var(--accent));
+            color: hsl(var(--accent-foreground));
+        }
+
+        .footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        .text-muted {
+            color: hsl(var(--muted-foreground));
+        }
+
+        .hidden {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mb-4 text-center">MetaDocAI - Pemeriksa Dokumen</h1>
-        <p class="text-center mb-4">Unggah dokumen .docx atau .pdf untuk memeriksa formatnya sesuai dengan kriteria yang ditentukan.</p>
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <form action="/" method="post" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="files" class="form-label">Unggah Dokumen (.docx atau .pdf):</label>
-                        <input class="form-control" type="file" name="files" id="files" accept=".docx, .pdf" multiple required>
+
+    <button class="settings-toggle" onclick="toggleSettings()" aria-label="Open settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6"/>
+            <path d="M17 12h4m-6 0h6"/>
+            <path d="M11 7l6 6"/>
+            <path d="M7 11l6 6"/>
+        </svg>
+    </button>
+
+
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+    </button>
+
+
+    <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <div class="settings-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Pengaturan
+            </div>
+            <button class="settings-close" onclick="closeSettings()" aria-label="Close settings">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12,6 12,12 16,14"/>
+                </svg>
+                Fitur Validasi
+            </div>
+            
+            <div class="toggle-group">
+                <div class="toggle-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="9" y1="9" x2="15" y2="9"/>
+                        <line x1="9" y1="12" x2="15" y2="12"/>
+                        <line x1="9" y1="15" x2="15" y2="15"/>
+                    </svg>
+                    <div>
+                        <div>Validasi Margin</div>
+                        <div class="feature-description">Periksa margin dokumen sesuai standar</div>
                     </div>
-                    <div class="mb-3">
-                        <div class="spinner-border text-primary" role="status" id="loadingSpinner" style="display: none;">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enableMarginCheck" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-group">
+                <div class="toggle-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                    <div>
+                        <div>Validasi Spasi Baris</div>
+                        <div class="feature-description">Periksa spasi antar baris dokumen</div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Periksa Dokumen</button>
-                </form>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enableSpacingCheck" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-group">
+                <div class="toggle-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                        <path d="M16,13H8"/>
+                        <path d="M16,17H8"/>
+                    </svg>
+                    <div>
+                        <div>Validasi Ukuran Font</div>
+                        <div class="feature-description">Periksa ukuran font dokumen</div>
+                    </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enableFontSizeCheck" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-group">
+                <div class="toggle-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <div>
+                        <div>Validasi Jenis Font</div>
+                        <div class="feature-description">Periksa jenis font (tidak selalu akurat)</div>
+                    </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enableFontTypeCheck">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-note">
+                Nonaktifkan fitur yang tidak diperlukan untuk mempercepat proses validasi. Validasi jenis font dinonaktifkan secara default karena tidak selalu akurat.
             </div>
         </div>
+
+
+        <div class="settings-section" id="marginSection">
+            <div class="settings-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="9" y1="9" x2="15" y2="9"/>
+                    <line x1="9" y1="12" x2="15" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                Pengaturan Margin
+            </div>
+            
+            <div class="margin-grid">
+                <div class="input-group">
+                    <label class="input-label" for="marginLeft">Margin Kiri</label>
+                    <div class="input-container">
+                        <input type="number" class="input-field" id="marginLeft" value="4" min="0" max="10" step="0.1">
+                        <span class="input-suffix">cm</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="marginRight">Margin Kanan</label>
+                    <div class="input-container">
+                        <input type="number" class="input-field" id="marginRight" value="3" min="0" max="10" step="0.1">
+                        <span class="input-suffix">cm</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="marginTop">Margin Atas</label>
+                    <div class="input-container">
+                        <input type="number" class="input-field" id="marginTop" value="3" min="0" max="10" step="0.1">
+                        <span class="input-suffix">cm</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="marginBottom">Margin Bawah</label>
+                    <div class="input-container">
+                        <input type="number" class="input-field" id="marginBottom" value="3" min="0" max="10" step="0.1">
+                        <span class="input-suffix">cm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-note">
+                Margin yang disesuaikan akan digunakan untuk validasi dokumen. Nilai default mengikuti standar akademik Indonesia.
+            </div>
+        </div>
+
+
+        <div class="settings-section" id="spacingSection">
+            <div class="settings-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+                Pengaturan Spasi Baris
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="lineSpacing">Spasi Antar Baris</label>
+                <div class="input-container">
+                    <input type="number" class="input-field" id="lineSpacing" value="1.5" min="1" max="3" step="0.1">
+                    <span class="input-suffix">x</span>
+                </div>
+            </div>
+            
+            <div class="settings-note">
+                Standar spasi 1.5 umumnya digunakan untuk dokumen akademik dan formal.
+            </div>
+        </div>
+
+
+        <div class="settings-section" id="fontSizeSection">
+            <div class="settings-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7"/>
+                    <polyline points="14,2 14,8 20,8"/>
+                    <path d="M16,13H8"/>
+                    <path d="M16,17H8"/>
+                </svg>
+                Pengaturan Ukuran Font
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="fontSize">Ukuran Font</label>
+                <div class="input-container">
+                    <input type="number" class="input-field" id="fontSize" value="12" min="8" max="24" step="1">
+                    <span class="input-suffix">pt</span>
+                </div>
+            </div>
+            
+            <div class="settings-note">
+                Font Times New Roman 12pt adalah standar untuk dokumen akademik. Jenis font tidak dapat diubah melalui pengaturan.
+            </div>
+        </div>
+
+
+        <div class="settings-section" id="toleranceSection">
+            <div class="settings-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12,6 12,12 16,14"/>
+                </svg>
+                Toleransi Validasi
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label" for="marginTolerance">Toleransi Margin</label>
+                <div class="input-container">
+                    <input type="number" class="input-field" id="marginTolerance" value="0.1" min="0" max="1" step="0.05">
+                    <span class="input-suffix">cm</span>
+                </div>
+            </div>
+            
+            <div class="settings-note">
+                Toleransi yang lebih besar akan membuat validasi lebih permisif terhadap perbedaan kecil.
+            </div>
+        </div>
+
+
+        <div class="settings-actions">
+            <button class="btn btn-success btn-full" onclick="saveSettings()">
+                Simpan Pengaturan
+            </button>
+        </div>
+        <div class="settings-actions" style="padding-top: 0.5rem; border-top: none;">
+            <button class="btn btn-secondary btn-full" onclick="resetSettings()">
+                Reset ke Default
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">MetaDocAI</h1>
+            <p class="subtitle">
+                Analisis dokumen dengan AI untuk memastikan format sesuai standar
+            </p>
+        </div>
+
+
+        <div class="card">
+            <form action="/" method="post" enctype="multipart/form-data" id="uploadForm">
+
+                <div class="upload-area" onclick="document.getElementById('files').click()">
+                    <input class="file-input" type="file" name="files" id="files" accept=".docx, .pdf" multiple required>
+                    <div class="upload-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.125rem; font-weight: 500;">
+                        Drag & drop files atau klik untuk upload
+                    </h3>
+                    <p class="text-muted" style="margin: 0 0 0.5rem 0; font-size: 0.875rem;">
+                        Mendukung format .docx dan .pdf • Maksimal 50MB
+                    </p>
+                    <p class="text-muted" style="margin: 0; font-size: 0.75rem;">
+                        File Anda aman dan tidak disimpan
+                    </p>
+                </div>
+
+
+                <div id="batchControls" class="batch-controls hidden">
+                    <div class="batch-header">
+                        <div class="batch-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                            <span id="batchTitle">File yang Dipilih (0)</span>
+                        </div>
+                        <div class="batch-actions">
+                            <button type="button" class="btn btn-secondary btn-small" id="clearAllBtn">
+                                Hapus Semua
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-small" id="addMoreBtn">
+                                Tambah File
+                            </button>
+                        </div>
+                    </div>
+                    <div id="fileList"></div>
+                </div>
+
+
+                <div class="loading" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <span id="loadingText">Memproses dokumen...</span>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary btn-full" id="analyzeBtn" style="margin-top: 1rem;">
+                    Analisis dengan AI
+                </button>
+            </form>
+        </div>
+
         {% if reports %}
             {% for report in reports %}
-                <div class="result {% if report.success %}alert alert-success{% else %}alert alert-danger{% endif %}">
-                    <h5>{{ report.filename }}</h5>
-                    {% if report.success %}
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-check-circle-fill me-2" style="font-size: 1.5rem; color: #28a745;"></i>
-                            <p class="mb-0">Dokumen ini sesuai dengan semua kriteria yang ditentukan!</p>
-                        </div>
-                    {% else %}
-                        <div class="d-flex align-items-start">
-                            <i class="bi bi-exclamation-circle-fill me-2" style="font-size: 1.5rem; color: #dc3545;"></i>
-                            <div>
-                                <p class="mb-2">Ada beberapa masalah pada dokumen ini:</p>
-                                <ul>
-                                    {% for item in report.messages %}
-                                        <li>{{ item }}</li>
-                                    {% endfor %}
-                                </ul>
-                                {% if report.confidence %}
-                                    <p><strong>Confidence Score:</strong> {{ report.confidence }}</p>
-                                {% endif %}
+                <div class="result-card">
+                    <div class="alert {% if report.success %}alert-success{% else %}alert-destructive{% endif %}">
+                        <div class="alert-title">
+                            {% if report.success %}
+                                <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                            {% else %}
+                                <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                            {% endif %}
+                            <div style="flex: 1;">
+                                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem;">
+                                    {{ report.filename }}
+                                </div>
+                                <div style="font-size: 0.875rem; opacity: 0.8; font-weight: 400;">
+                                    {% if report.success %}
+                                        Format sesuai standar
+                                    {% else %}
+                                        Ditemukan {{ report.messages|length }} masalah
+                                    {% endif %}
+                                </div>
                             </div>
+                            {% if report.confidence %}
+                                <span class="badge">
+                                    AI: {{ report.confidence }}
+                                </span>
+                            {% endif %}
                         </div>
-                    {% endif %}
+                        
+                        {% if report.success %}
+                            <div style="text-align: center; padding: 1.5rem 0;">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--success))" stroke-width="1.5" style="margin-bottom: 1rem;">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                                <h3 style="margin: 0 0 0.5rem 0; color: hsl(var(--success)); font-weight: 600;">
+                                    Dokumen Sempurna!
+                                </h3>
+                                <p style="margin: 0; color: hsl(var(--muted-foreground));">
+                                    Semua aspek format dokumen sesuai dengan standar yang ditentukan.
+                                </p>
+                            </div>
+                        {% else %}
+                            <div>
+                                <div style="margin-bottom: 1rem;">
+                                    <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; color: hsl(var(--destructive));">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <line x1="12" y1="8" x2="12" y2="12"/>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                        </svg>
+                                        Laporan Detail Masalah Format
+                                    </h4>
+                                    
+                                    {% set font_issues = [] %}
+                                    {% set spacing_issues = [] %}
+                                    {% set margin_issues = [] %}
+                                    {% set other_issues = [] %}
+                                    
+                                    {% for item in report.messages %}
+                                        {% if 'font' in item.lower() or 'Font' in item %}
+                                            {% set _ = font_issues.append(item) %}
+                                        {% elif 'spasi' in item.lower() or 'spacing' in item.lower() %}
+                                            {% set _ = spacing_issues.append(item) %}
+                                        {% elif 'margin' in item.lower() or 'Margin' in item %}
+                                            {% set _ = margin_issues.append(item) %}
+                                        {% else %}
+                                            {% set _ = other_issues.append(item) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+
+                                    
+                                    {% if spacing_issues %}
+                                    <div style="background: linear-gradient(135deg, hsl(var(--destructive) / 0.05) 0%, hsl(var(--destructive) / 0.08) 100%); border: 1px solid hsl(var(--destructive) / 0.2); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--destructive))" stroke-width="2">
+                                                <line x1="3" y1="6" x2="21" y2="6"/>
+                                                <line x1="3" y1="12" x2="21" y2="12"/>
+                                                <line x1="3" y1="18" x2="21" y2="18"/>
+                                            </svg>
+                                            <h5 style="margin: 0; font-size: 0.9rem; font-weight: 600; color: hsl(var(--destructive));">
+                                                Masalah Spasi Baris ({{ spacing_issues|length }} lokasi)
+                                            </h5>
+                                        </div>
+                                        {% for item in spacing_issues %}
+                                            <div style="background-color: hsl(var(--background)); border-radius: 0.25rem; padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid hsl(var(--destructive)); font-size: 0.85rem;">
+                                                {{ item }}
+                                            </div>
+                                        {% endfor %}
+                                        <p style="margin: 0.75rem 0 0 0; font-weight: 500; color: hsl(var(--destructive)); font-size: 0.85rem;">
+                                            ⚠ Standar: Gunakan spasi <strong>1.5</strong> untuk seluruh dokumen
+                                        </p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if margin_issues %}
+                                    <div style="background: linear-gradient(135deg, hsl(var(--destructive) / 0.05) 0%, hsl(var(--destructive) / 0.08) 100%); border: 1px solid hsl(var(--destructive) / 0.2); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--destructive))" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                                <line x1="9" y1="9" x2="15" y2="9"/>
+                                                <line x1="9" y1="12" x2="15" y2="12"/>
+                                                <line x1="9" y1="15" x2="15" y2="15"/>
+                                            </svg>
+                                            <h5 style="margin: 0; font-size: 0.9rem; font-weight: 600; color: hsl(var(--destructive));">
+                                                Masalah Margin ({{ margin_issues|length }} lokasi)
+                                            </h5>
+                                        </div>
+                                        {% for item in margin_issues %}
+                                            <div style="background-color: hsl(var(--background)); border-radius: 0.25rem; padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid hsl(var(--destructive)); font-size: 0.85rem;">
+                                                {{ item }}
+                                            </div>
+                                        {% endfor %}
+                                        <p style="margin: 0.75rem 0 0 0; font-weight: 500; color: hsl(var(--destructive)); font-size: 0.85rem;">
+                                            ⚠ Standar: <strong>Kiri 4cm, Kanan 3cm, Atas 3cm, Bawah 3cm</strong>
+                                        </p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if other_issues %}
+                                    <div style="background: linear-gradient(135deg, hsl(var(--destructive) / 0.05) 0%, hsl(var(--destructive) / 0.08) 100%); border: 1px solid hsl(var(--destructive) / 0.2); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--destructive))" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                            </svg>
+                                            <h5 style="margin: 0; font-size: 0.9rem; font-weight: 600; color: hsl(var(--destructive));">
+                                                Masalah Lainnya ({{ other_issues|length }} item)
+                                            </h5>
+                                        </div>
+                                        {% for item in other_issues %}
+                                            <div style="background-color: hsl(var(--background)); border-radius: 0.25rem; padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid hsl(var(--destructive)); font-size: 0.85rem;">
+                                                {{ item }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if font_issues %}
+                                    <div style="background: linear-gradient(135deg, hsl(var(--warning) / 0.05) 0%, hsl(var(--warning) / 0.08) 100%); border: 1px solid hsl(var(--warning) / 0.3); border-radius: 0.5rem; padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--warning))" stroke-width="2">
+                                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                            </svg>
+                                            <h5 style="margin: 0; font-size: 0.9rem; font-weight: 600; color: hsl(var(--warning));">
+                                                Peringatan Font ({{ font_issues|length }} lokasi) - Tidak Selalu Akurat
+                                            </h5>
+                                        </div>
+                                        <div style="background-color: hsl(var(--warning) / 0.1); border: 1px solid hsl(var(--warning) / 0.4); border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem;">
+                                            <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--warning))" stroke-width="2" style="margin-top: 0.1rem; flex-shrink: 0;">
+                                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                                </svg>
+                                                <div style="font-size: 0.85rem; line-height: 1.4;">
+                                                    <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: hsl(var(--warning));">
+                                                        Penting - Baca Sebelum Memperbaiki:
+                                                    </p>
+                                                    <p style="margin: 0 0 0.5rem 0; color: hsl(var(--card-foreground));">
+                                                        <strong>Deteksi font tidak selalu akurat.</strong> Beberapa versi Microsoft Office dapat salah melaporkan jenis font yang sebenarnya. 
+                                                        Silakan periksa secara manual di dokumen dan pastikan konsistensi font di seluruh bagian jika tidak yakin.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 0.85rem; line-height: 1.5; color: hsl(var(--card-foreground));">
+                                            <p style="margin: 0 0 0.5rem 0; font-weight: 500;">
+                                                Laporan deteksi font:
+                                            </p>
+                                            {% for item in font_issues %}
+                                                <div style="background-color: hsl(var(--background)); border-radius: 0.25rem; padding: 0.5rem; margin-bottom: 0.5rem; border-left: 3px solid hsl(var(--warning)); opacity: 0.8;">
+                                                    {{ item }}
+                                                </div>
+                                            {% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             {% endfor %}
         {% endif %}
     </div>
-    <footer>
-        <p>MetaDocAI © 2023 Farraz Firdaus NA. Semua hak dilindungi undang-undang.</p>
+
+    </div>
+
+
+    <footer class="footer">
+        <p><strong>MetaDocAI</strong> © 2025 Farraz Firdaus NA</p>
+        <p class="text-muted">Secure & Private</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
     <script>
-        const form = document.querySelector('form');
-        const spinner = document.getElementById('loadingSpinner');
+
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('dark');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (isDark) {
+                document.body.classList.remove('dark');
+                themeIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                `;
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.classList.add('dark');
+                themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                document.body.classList.add('dark');
+                document.getElementById('theme-icon').innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+            }
+        }
+
+
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('files');
+        const batchControls = document.getElementById('batchControls');
+        const fileList = document.getElementById('fileList');
+        const batchTitle = document.getElementById('batchTitle');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const addMoreBtn = document.getElementById('addMoreBtn');
+        const form = document.getElementById('uploadForm');
+        const loading = document.getElementById('loadingSpinner');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        let selectedFiles = new Map();
+
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.add('drag-over'));
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('drag-over'));
+        });
+
+        uploadArea.addEventListener('drop', e => {
+            addFilesToBatch(Array.from(e.dataTransfer.files));
+        });
+
+        fileInput.addEventListener('change', e => {
+            addFilesToBatch(Array.from(e.target.files));
+        });
+
+        addMoreBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        clearAllBtn.addEventListener('click', () => {
+            selectedFiles.clear();
+            updateBatchDisplay();
+            updateFileInput();
+        });
+
+        function addFilesToBatch(files) {
+            files.forEach(file => {
+
+                if (!file.name.toLowerCase().endsWith('.docx') && !file.name.toLowerCase().endsWith('.pdf')) {
+                    return;
+                }
+                
+
+                if (file.size > 50 * 1024 * 1024) {
+                    return;
+                }
+                
+
+                const fileId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                selectedFiles.set(fileId, {
+                    file: file,
+                    status: 'pending',
+                    id: fileId
+                });
+            });
+            
+            updateBatchDisplay();
+            updateFileInput();
+        }
+
+        function removeFile(fileId) {
+            selectedFiles.delete(fileId);
+            updateBatchDisplay();
+            updateFileInput();
+        }
+
+        function updateBatchDisplay() {
+            const fileCount = selectedFiles.size;
+            
+            if (fileCount === 0) {
+                batchControls.classList.add('hidden');
+                analyzeBtn.textContent = 'Analisis dengan AI';
+                return;
+            }
+            
+            batchControls.classList.remove('hidden');
+            batchTitle.textContent = `File yang Dipilih (${fileCount})`;
+            analyzeBtn.textContent = `Analisis ${fileCount} File`;
+            
+            fileList.innerHTML = '';
+            selectedFiles.forEach((fileData, fileId) => {
+                const fileSize = (fileData.file.size / 1024 / 1024).toFixed(2);
+                const fileType = fileData.file.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOCX';
+                const icon = fileData.file.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOC';
+                
+                const statusClass = `status-${fileData.status}`;
+                const statusText = {
+                    'pending': 'Menunggu',
+                    'processing': 'Memproses...',
+                    'success': 'Selesai',
+                    'error': 'Error'
+                }[fileData.status];
+                
+                fileList.innerHTML += `
+                    <div class="file-item" data-file-id="${fileId}">
+                        <div class="file-info">
+                            <div class="file-preview-icon" style="font-size: 1rem; min-width: 2rem; text-align: center;">${icon}</div>
+                            <div>
+                                <h6 style="margin: 0 0 0.25rem 0; font-size: 0.875rem; font-weight: 500;">${fileData.file.name}</h6>
+                                <small style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;">${fileSize} MB • ${fileType}</small>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="file-status ${statusClass}">${statusText}</span>
+                            <button type="button" class="remove-file" onclick="removeFile('${fileId}')" title="Hapus file">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateFileInput() {
+
+            const dt = new DataTransfer();
+            selectedFiles.forEach(fileData => {
+                dt.items.add(fileData.file);
+            });
+            fileInput.files = dt.files;
+        }
+
+        function updateFileStatus(fileId, status) {
+            if (selectedFiles.has(fileId)) {
+                selectedFiles.get(fileId).status = status;
+                updateBatchDisplay();
+            }
+        }
+
+
+        window.removeFile = removeFile;
+
 
         form.addEventListener('submit', () => {
-            spinner.style.display = 'block';
+            loading.style.display = 'block';
+            analyzeBtn.disabled = true;
+        });
+
+
+        const defaultSettings = {
+            marginLeft: 4.0,
+            marginRight: 3.0,
+            marginTop: 3.0,
+            marginBottom: 3.0,
+            lineSpacing: 1.5,
+            fontSize: 12,
+            marginTolerance: 0.1,
+            enableMarginCheck: true,
+            enableSpacingCheck: true,
+            enableFontSizeCheck: true,
+            enableFontTypeCheck: false
+        };
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            panel.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        function closeSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            panel.classList.remove('open');
+            overlay.classList.remove('open');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('metadocai-settings');
+            const settings = saved ? JSON.parse(saved) : defaultSettings;
+            
+
+            document.getElementById('marginLeft').value = settings.marginLeft;
+            document.getElementById('marginRight').value = settings.marginRight;
+            document.getElementById('marginTop').value = settings.marginTop;
+            document.getElementById('marginBottom').value = settings.marginBottom;
+            document.getElementById('lineSpacing').value = settings.lineSpacing;
+            document.getElementById('fontSize').value = settings.fontSize;
+            document.getElementById('marginTolerance').value = settings.marginTolerance;
+            
+
+            document.getElementById('enableMarginCheck').checked = settings.enableMarginCheck;
+            document.getElementById('enableSpacingCheck').checked = settings.enableSpacingCheck;
+            document.getElementById('enableFontSizeCheck').checked = settings.enableFontSizeCheck;
+            document.getElementById('enableFontTypeCheck').checked = settings.enableFontTypeCheck;
+            
+
+            updateSectionStates(settings);
+            
+            return settings;
+        }
+
+        function updateSectionStates(settings) {
+
+            const marginSection = document.getElementById('marginSection');
+            const spacingSection = document.getElementById('spacingSection');
+            const fontSizeSection = document.getElementById('fontSizeSection');
+            const toleranceSection = document.getElementById('toleranceSection');
+            
+            if (marginSection) {
+                marginSection.style.display = settings.enableMarginCheck ? 'block' : 'none';
+            }
+            if (spacingSection) {
+                spacingSection.style.display = settings.enableSpacingCheck ? 'block' : 'none';
+            }
+            if (fontSizeSection) {
+                fontSizeSection.style.display = settings.enableFontSizeCheck ? 'block' : 'none';
+            }
+        }
+
+        function saveSettings() {
+            const settings = {
+                marginLeft: parseFloat(document.getElementById('marginLeft').value),
+                marginRight: parseFloat(document.getElementById('marginRight').value),
+                marginTop: parseFloat(document.getElementById('marginTop').value),
+                marginBottom: parseFloat(document.getElementById('marginBottom').value),
+                lineSpacing: parseFloat(document.getElementById('lineSpacing').value),
+                fontSize: parseInt(document.getElementById('fontSize').value),
+                marginTolerance: parseFloat(document.getElementById('marginTolerance').value),
+                enableMarginCheck: document.getElementById('enableMarginCheck').checked,
+                enableSpacingCheck: document.getElementById('enableSpacingCheck').checked,
+                enableFontSizeCheck: document.getElementById('enableFontSizeCheck').checked,
+                enableFontTypeCheck: document.getElementById('enableFontTypeCheck').checked
+            };
+            
+            localStorage.setItem('metadocai-settings', JSON.stringify(settings));
+            
+
+            const saveBtn = document.querySelector('.btn-success');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Tersimpan!';
+            saveBtn.style.backgroundColor = 'hsl(var(--success))';
+            
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+            }, 2000);
+            
+
+            setTimeout(closeSettings, 1000);
+        }
+
+        function resetSettings() {
+
+            Object.keys(defaultSettings).forEach(key => {
+                document.getElementById(key).value = defaultSettings[key];
+            });
+            
+
+            localStorage.removeItem('metadocai-settings');
+            
+
+            const resetBtn = document.querySelector('.btn-secondary');
+            const originalText = resetBtn.textContent;
+            resetBtn.textContent = 'Reset Berhasil!';
+            
+            setTimeout(() => {
+                resetBtn.textContent = originalText;
+            }, 2000);
+        }
+
+        function getCustomSettings() {
+            const saved = localStorage.getItem('metadocai-settings');
+            return saved ? JSON.parse(saved) : defaultSettings;
+        }
+
+
+        function addSettingsToForm() {
+            const settings = getCustomSettings();
+            
+
+            Object.keys(settings).forEach(key => {
+                const existing = document.querySelector(`input[name="setting_${key}"]`);
+                if (existing) existing.remove();
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `setting_${key}`;
+                input.value = settings[key];
+                form.appendChild(input);
+            });
+        }
+
+
+        form.addEventListener('submit', (e) => {
+            addSettingsToForm();
+            loading.style.display = 'block';
+            analyzeBtn.disabled = true;
+        });
+
+
+        function setupToggleListeners() {
+            ['enableMarginCheck', 'enableSpacingCheck', 'enableFontSizeCheck', 'enableFontTypeCheck'].forEach(id => {
+                const toggle = document.getElementById(id);
+                if (toggle) {
+                    toggle.addEventListener('change', () => {
+                        const settings = getCustomSettings();
+                        settings[id] = toggle.checked;
+                        updateSectionStates(settings);
+                    });
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadSettings();
+            setupToggleListeners();
         });
     </script>
 </body>

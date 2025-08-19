@@ -1,115 +1,212 @@
 # MetaDocAI
 
-![Document Checker Banner](https://via.placeholder.com/700x200.png?text=MetaDocAI)
+**MetaDocAI** adalah aplikasi web modern berbasis AI untuk validasi format dokumen akademik dan profesional. Aplikasi ini menyediakan analisis komprehensif terhadap dokumen `.docx` dan `.pdf` dengan antarmuka yang clean dan professional.
 
-##  Deskripsi
+## ✨ Fitur Utama
 
-**MetaDocAI** adalah aplikasi web interaktif yang memungkinkan pengguna untuk mengunggah dokumen `.docx` atau `.pdf` dan memeriksa apakah format dokumen tersebut sesuai dengan kriteria yang ditentukan. Aplikasi ini memeriksa aspek-aspek seperti font, ukuran font, spasi antar baris, dan margin dokumen untuk memastikan standar format yang konsisten.
+### 🎯 Validasi Dokumen
+- **Pemeriksaan Multi-Format:** Mendukung dokumen `.docx` dan `.pdf`
+- **Validasi Font:** Memeriksa jenis dan ukuran font (Times New Roman 12pt)
+- **Validasi Spasi:** Menganalisis spasi antar baris (standar 1.5)
+- **Validasi Margin:** Memeriksa margin dokumen dalam centimeter
+- **Integrasi AI:** Klasifikasi dokumen dengan confidence score
 
-##  Fitur
+### 🎨 Antarmuka Modern
+- **Design System:** Menggunakan shadcn/ui design principles
+- **Dark/Light Mode:** Toggle tema dengan deteksi sistem otomatis
+- **Responsive Design:** Optimal di semua perangkat
+- **Clean UI:** Tanpa emoji, professional appearance
+- **Drag & Drop:** Upload file dengan drag and drop
 
-- **Pemeriksaan Dokumen `.docx` dan `.pdf`:** Mengunggah dan memeriksa dua format dokumen populer.
-- **Validasi Font dan Ukuran Font:** Memastikan penggunaan font *Times New Roman* dengan ukuran 12 pt.
-- **Validasi Spasi Antar Baris:** Memeriksa apakah spasi antar baris sesuai dengan standar 1.5.
-- **Validasi Margin dalam Centimeter:** Memastikan margin dokumen sesuai dengan standar yang ditetapkan (Left: 4 cm, Right: 3 cm, Top: 3 cm, Bottom: 3 cm).
-- **Antarmuka Pengguna Modern:** Desain responsif dan menarik menggunakan Bootstrap.
-- **Umpan Balik Visual:** Menampilkan hasil pemeriksaan dengan ikon status yang jelas.
-- **Pembatasan Ukuran File:** Membatasi ukuran file unggahan hingga 50MB untuk keamanan dan kinerja optimal.
-- **Integrasi Machine Learning:** Menggunakan model ML untuk klasifikasi dokumen sebagai "Correct" atau "Incorrect".
+### ⚙️ Pengaturan Kustom
+- **Custom Margin:** Atur margin sesuai kebutuhan (tersimpan otomatis)
+- **Flexible Spacing:** Konfigurasi spasi baris custom
+- **Font Size Control:** Atur ukuran font yang diharapkan
+- **Validation Tolerance:** Kontrol tingkat toleransi validasi
+- **Feature Toggles:** Aktifkan/nonaktifkan fitur validasi tertentu
 
-##  Instalasi
+### 🚀 Batch Processing
+- **Multi-File Upload:** Proses beberapa dokumen sekaligus
+- **File Management:** Kelola daftar file dengan status individual
+- **Batch Controls:** Tambah, hapus, atau clear semua file
+- **Progress Tracking:** Monitor status setiap file dalam batch
 
-Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi ini di lingkungan lokal Anda:
+### 📊 Pelaporan Detail
+- **Kategorisasi Masalah:** Masalah dikelompokkan berdasarkan jenis
+- **Visual Hierarchy:** Font issues di bagian bawah (karena tidak selalu akurat)
+- **Detailed Reports:** Informasi spesifik untuk setiap masalah
+- **Smart Warnings:** Peringatan khusus untuk deteksi font yang tidak akurat
+
+## 🛠️ Teknologi
+
+- **Backend:** Flask 3.1.1 (Python)
+- **Document Processing:** python-docx 1.2.0, PyPDF2 3.0.1
+- **Machine Learning:** scikit-learn 1.7.1, pandas 2.3.1
+- **Frontend:** Vanilla JavaScript, Custom CSS
+- **Storage:** localStorage untuk pengaturan persistent
+
+## 📦 Instalasi
 
 ### Prasyarat
+- **Python 3.7+**
+- **Git**
 
-- **Python 3.7+** terinstal di komputer Anda.
-- **Git** terinstal di komputer Anda.
-
-### Langkah-langkah
+### Langkah Instalasi
 
 1. **Clone Repository**
+   ```bash
+   git clone https://github.com/zarzet/MetaDocAI.git
+   cd MetaDocAI
+   ```
 
-    ```bash
-    git clone https://github.com/Fapzarz/MetaDocAI.git
-    cd MetaDocAI
-    ```
+2. **Setup Virtual Environment**
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # Linux/Mac
+   source venv/bin/activate
+   ```
 
-2. **Buat dan Aktifkan Virtual Environment**
+3. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # Untuk Windows: venv\Scripts\activate
-    ```
+4. **Run Application**
+   ```bash
+   python main.py
+   ```
 
-3. **Instal Dependensi**
+5. **Access Application**
+   
+   Buka browser: `http://127.0.0.1:81/`
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+## 🎮 Cara Penggunaan
 
-4. **Jalankan Aplikasi**
+### Upload Dokumen
+1. **Drag & Drop** file ke area upload atau **klik untuk browse**
+2. **Multi-file selection** - pilih beberapa dokumen sekaligus
+3. **File validation** - otomatis filter file yang valid
 
-    ```bash
-    python main.py
-    ```
+### Konfigurasi Settings
+1. **Klik icon gear** di pojok kiri atas
+2. **Atur margin custom** sesuai kebutuhan
+3. **Toggle fitur validasi** yang diinginkan
+4. **Simpan pengaturan** (tersimpan otomatis)
 
-    **Akses Aplikasi**
+### Analisis Dokumen
+1. **Klik "Analisis dengan AI"**
+2. **Monitor progress** setiap file
+3. **Review hasil** yang dikategorisasi
 
-    Buka browser Anda dan navigasikan ke `http://127.0.0.1:81/`
+### Interpretasi Hasil
+- **✅ Success:** Dokumen sesuai semua standar
+- **❌ Issues:** Masalah dikategorisasi (Spacing → Margin → Font)
+- **⚠️ Font Warning:** Deteksi font tidak selalu akurat
 
-##  Penggunaan
+## 🔧 Fitur Pengaturan
 
-### Buka Aplikasi
+### Margin Kustom
+- **Kiri:** 0-10cm (default: 4cm)
+- **Kanan:** 0-10cm (default: 3cm)
+- **Atas:** 0-10cm (default: 3cm)
+- **Bawah:** 0-10cm (default: 3cm)
 
-Setelah menjalankan aplikasi, buka URL yang diberikan (misalnya, `http://127.0.0.1:81/`) di browser Anda.
+### Validasi Options
+- **✅ Margin Check:** Validasi margin (default: ON)
+- **✅ Spacing Check:** Validasi spasi baris (default: ON)
+- **✅ Font Size Check:** Validasi ukuran font (default: ON)
+- **❌ Font Type Check:** Validasi jenis font (default: OFF)
 
-### Unggah Dokumen
+### Toleransi
+- **Margin Tolerance:** 0-1cm (default: 0.1cm)
+- **Spacing Tolerance:** Fixed 0.1 untuk konsistensi
 
-Klik tombol "Choose File" dan pilih dokumen `.docx` atau `.pdf` yang ingin Anda periksa.
+## 📱 Antarmuka
 
-### Periksa Dokumen
+### Design Principles
+- **shadcn/ui inspired** - Clean, minimal, professional
+- **HSL color system** - Consistent theming
+- **Semantic colors** - Meaningful color usage
+- **Accessible design** - WCAG compliant
+- **Mobile responsive** - Works on all devices
 
-Klik tombol "Periksa Dokumen". Spinner loading akan muncul menunjukkan bahwa dokumen sedang diproses.
+### Theme Support
+- **Light Mode:** Clean white background
+- **Dark Mode:** Professional dark theme
+- **System Detection:** Auto-detects OS preference
+- **Persistent Choice:** Remembers user preference
 
-### Lihat Hasil
+## 🔄 Changelog
 
-Setelah proses selesai, hasil pemeriksaan akan ditampilkan di bawah formulir dengan informasi yang jelas mengenai aspek-aspek yang sesuai atau yang perlu diperbaiki.
+### v2.0 - 2025-01-20 (Major Update)
 
-##  Kontribusi
+#### 🎨 UI/UX Overhaul
+- **Complete redesign** dengan shadcn/ui principles
+- **Removed all emojis** untuk tampilan yang lebih professional
+- **Dark/Light mode** dengan system preference detection
+- **Responsive improvements** untuk semua perangkat
 
-Kontribusi sangat diterima! Jika Anda menemukan bug atau memiliki saran fitur, silakan buka issue atau ajukan pull request.
+#### ⚙️ Advanced Settings
+- **Custom margin configuration** dengan persistent storage
+- **Feature toggles** untuk enable/disable validasi tertentu
+- **Tolerance settings** untuk kontrol validasi
+- **Smart defaults** dengan font type check disabled
 
-##  Lisensi
+#### 🚀 Batch Processing
+- **Multi-file upload** dengan drag & drop
+- **File management system** dengan status tracking
+- **Batch controls** untuk manipulasi file
+- **Individual file removal** dari batch
 
-MIT License
+#### 📊 Enhanced Reporting
+- **Categorized issues** berdasarkan jenis masalah
+- **Visual hierarchy** dengan font issues di bawah
+- **Detailed error messages** dengan konteks yang jelas
+- **Smart warnings** untuk deteksi yang tidak akurat
 
-Copyright (c) 2024 Fapzarz
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-##  Kredit
-
-Aplikasi ini dibuat oleh Fapzarz.
-
-##  Catatan Pengembang
-
-Integrasi Machine Learning akan tersedia segera, karena model sedang di training
-Jika Anda mengalami masalah atau memiliki pertanyaan terkait proyek ini, jangan ragu untuk menghubungi saya melalui [fapzarz@gmail.com](mailto:fapzarz@gmail.com).
-
-##  Changelog
+#### 🔧 Technical Improvements
+- **Updated dependencies** ke versi terbaru
+- **PyPDF2 integration** menggantikan PyMuPDF
+- **Production-ready code** tanpa development comments
+- **Improved error handling** dan validation
 
 ### v1.3 - 2024-09-25
+- **Integrasi Machine Learning** untuk klasifikasi dokumen
+- **Confidence Score** dari prediksi AI
+- **Branding Update** ke MetaDocAI
+- **Security Enhancements**
+- **UI Improvements**
 
-- **Integrasi Fitur Machine Learning:** Penambahan kemampuan klasifikasi dokumen menggunakan model ML untuk menentukan apakah dokumen sesuai atau tidak sesuai dengan kriteria yang ditentukan.
-- **Penambahan Confidence Score:** Menampilkan skor kepercayaan dari prediksi ML untuk memberikan informasi lebih detail kepada pengguna.
-- **Branding Proyek:** Mengubah nama aplikasi menjadi **MetaDocAI** dan memperbarui identitas branding di seluruh kode dan UI.
-- **Peningkatan Keamanan:** Menambahkan langkah-langkah keamanan dalam penamaan ulang variabel dan fungsi serta penambahan metadata dalam kode untuk identifikasi proyek.
-- **Perbaikan Error Handling:** Memperbaiki penanganan error pada upload dokumen untuk memberikan feedback yang lebih jelas kepada pengguna.
-- **Penyempurnaan Antarmuka Pengguna:** Meningkatkan tampilan dan responsivitas UI dengan penambahan ikon status dan aktualisasi desain.
+## 🤝 Kontribusi
 
+Kontribusi sangat diterima! Silakan:
+1. Fork repository ini
+2. Buat feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
 
+## 📄 Lisensi
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👨‍💻 Developer
+
+**Farraz Firdaus NA**
+- Email: [fapzarz@gmail.com](mailto:fapzarz@gmail.com)
+- GitHub: [@zarzet](https://github.com/zarzet)
+
+## 🙏 Acknowledgments
+
+- [shadcn/ui](https://ui.shadcn.com/) untuk design inspiration
+- [Flask](https://flask.palletsprojects.com/) untuk web framework
+- [python-docx](https://python-docx.readthedocs.io/) untuk document processing
+- [scikit-learn](https://scikit-learn.org/) untuk machine learning capabilities
+
+---
+
+⭐ **Star this repository** jika berguna untuk Anda!
