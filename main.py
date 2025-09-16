@@ -249,7 +249,7 @@ def index():
     if request.method == 'POST':
         uploaded_files = request.files.getlist('files')
         if not uploaded_files or uploaded_files == [None]:
-            return render_template('index.html', reports=[{"success": False, "filename": "Tidak ada file yang diunggah.", "messages": ["Tidak ada file yang diunggah."]}])
+            return render_template('Index.html', reports=[{"success": False, "filename": "Tidak ada file yang diunggah.", "messages": ["Tidak ada file yang diunggah."]}])
 
 
         custom_settings = {}
@@ -301,13 +301,13 @@ def index():
             report["filename"] = uploaded_file.filename
             reports.append(report)
 
-        return render_template('index.html', reports=reports)
+        return render_template('Index.html', reports=reports)
 
-    return render_template('index.html')
+    return render_template('Index.html')
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
-    return render_template('index.html', reports=[{"success": False, "filename": "File terlalu besar.", "messages": ["File terlalu besar. Maksimal 50MB."]}]), 413
+    return render_template('Index.html', reports=[{"success": False, "filename": "File terlalu besar.", "messages": ["File terlalu besar. Maksimal 50MB."]}]), 413
 
 if __name__ == '__main__':
     print("Isi folder 'templates':", os.listdir('templates'))
