@@ -926,7 +926,7 @@
 
 
         <div class="settings-actions">
-            <button class="btn btn-success btn-full" onclick="saveSettings()">
+            <button class="btn btn-primary btn-full" onclick="saveSettings()">
                 Simpan Pengaturan
             </button>
         </div>
@@ -1497,11 +1497,11 @@
             
             localStorage.setItem('metadocai-settings', JSON.stringify(settings));
             
-
-            const saveBtn = document.querySelector('.btn-success');
+            
+            const saveBtn = document.querySelector('.settings-actions .btn-primary');
             const originalText = saveBtn.textContent;
             saveBtn.textContent = 'Tersimpan!';
-            saveBtn.style.backgroundColor = 'hsl(var(--success))';
+            saveBtn.style.backgroundColor = 'hsl(var(--primary))';
             
             setTimeout(() => {
                 saveBtn.textContent = originalText;
